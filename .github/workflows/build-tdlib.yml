@@ -26,13 +26,6 @@ jobs:
           rm -rf /opt/android-ndk-tmp
           export PATH=$PATH:/opt/android-ndk
           
-      - name: build ssl
-        run: |
-          export ANDROID_NDK_HOME=/opt/android-ndk
-          export ANDROID_NDK_ROOT=/opt/android-ndk
-          cd td/example/third_party/crypto
-          ./build-all.sh    
-
       - name: clone
         run: |
           git clone https://github.com/tdlib/td.git
