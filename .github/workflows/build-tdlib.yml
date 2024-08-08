@@ -59,10 +59,23 @@ jobs:
           cd td/build
           cmake --build . --target tdlib_java
 
-      - name: zip
+      - name: generate java project structure
+        run: |
+          mkdir -p td/tdlib/java_project/libs
+          mkdir -p td/tdlib/java_project/src/main/java
+          mkdir -p td/tdlib/java_project/src/main/resources
+          mkdir -p td/tdlib/java_project/src/main/AndroidManifest.xml
+          mv td/tdlib/java/libtdjni.so td/tdlib/java_project/libs/
+
+      - name: generate javadocs
         run: |
           cd td/tdlib/java
-          zip -r libtdjni.zip libtdjni.so
+          javadoc -d docs $(find . -name "*.java")
+
+      - name: zip
+        run: |
+          cd td/tdlib/java_project
+          zip -r java_project.zip *
 
       - name: Release
         uses: ncipollo/release-action@v1
@@ -71,5 +84,5 @@ jobs:
           name: Android ${{ env.td_version }}-${{ env.td_commit_hash }}
           body: https://github.com/tdlib/td/tree/${{ env.td_commit_hash }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: 'td/tdlib/java/libtdjni.zip'
+          artifacts: 'td/tdlib/java_project/java_project.zip'
           
