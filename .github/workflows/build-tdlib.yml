@@ -42,7 +42,7 @@ jobs:
       - name: zip
         run: |
           cd td/example/
-          zip java.zip 
+          zip -r java.zip td/example/java
           
       - name: Release
         uses: ncipollo/release-action@v1
