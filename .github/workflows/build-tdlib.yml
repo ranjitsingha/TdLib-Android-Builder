@@ -3,7 +3,6 @@ name: tdlib-build
 on:
   push:
     paths:
-      - '.github/workflows/td-version.json'
       - '.github/workflows/build-tdlib.yml'
 
 jobs:
@@ -11,12 +10,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-
-      - name: JSON to variables
-        uses: rgarcia-phi/json-to-variables@v1.1.0
-        with:
-          filename: '.github/workflows/td-version.json'
-          prefix: td
 
       - name: setup
         run: |
@@ -32,51 +25,32 @@ jobs:
           cd /opt/android-ndk
           rm -rf /opt/android-ndk-tmp
           export PATH=$PATH:/opt/android-ndk
+          
+      - name: build ssl
+        run: |
+          export ANDROID_NDK_HOME=/opt/android-ndk
+          export ANDROID_NDK_ROOT=/opt/android-ndk
+          cd td/example/third_party/crypto
+          ./build-all.sh    
 
       - name: clone
         run: |
           git clone https://github.com/tdlib/td.git
           cd td
-          git checkout ${{ env.td_commit_hash }}
-          git show --summary
 
       - name: setup td
         run: |
-          cd td
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DTD_ENABLE_JNI=ON ..
-          cmake --build . --target prepare_cross_compiling
-          cd ..
-          php SplitSource.php
-          cd build
+          cd td/example
+          mkdir jnibuild
+          cd jnibuild
+          cmake -DCMAKE_BUILD_TYPE=Release -DTD_ENABLE_JNI=ON -DCMAKE_INSTALL_PREFIX:PATH=../example/java/td ..
           cmake --build . --target install
-          cd ..
-          php SplitSource.php --undo
-
-      - name: build
-        run: |
-          cd td/build
-          cmake --build . --target tdlib_java
-
-      - name: generate java project structure
-        run: |
-          mkdir -p td/tdlib/java_project/libs
-          mkdir -p td/tdlib/java_project/src/main/java
-          mkdir -p td/tdlib/java_project/src/main/resources
-          mkdir -p td/tdlib/java_project/src/main/AndroidManifest.xml
-          mv td/tdlib/java/libtdjni.so td/tdlib/java_project/libs/
-
-      - name: generate javadocs
-        run: |
-          cd td/tdlib/java
-          javadoc -d docs $(find . -name "*.java")
 
       - name: zip
         run: |
-          cd td/tdlib/java_project
-          zip -r java_project.zip *
-
+          cd td/example/
+          zip java.zip 
+          
       - name: Release
         uses: ncipollo/release-action@v1
         with:
@@ -84,5 +58,4 @@ jobs:
           name: Android ${{ env.td_version }}-${{ env.td_commit_hash }}
           body: https://github.com/tdlib/td/tree/${{ env.td_commit_hash }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: 'td/tdlib/java_project/java_project.zip'
-          
+          artifacts: 'td/example/java.zip'
