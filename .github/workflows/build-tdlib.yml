@@ -40,8 +40,8 @@ jobs:
 
     - name: Set up environment variables
       run: |
-        echo "ANDROID_HOME=${{ github.workspace }}/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=${{ github.workspace }}/android-ndk" >> $GITHUB_ENV
+        echo "ANDROID_HOME=/home/runner/work/lib/lib/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=/home/runner/work/lib/lib/android-ndk" >> $GITHUB_ENV
 
     - name: Print environment variables
       run: |
@@ -67,4 +67,3 @@ jobs:
       with:
         name: tdlib-android
         path: td/example/android/tdlib-android.zip
-        
