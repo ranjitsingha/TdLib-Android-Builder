@@ -16,45 +16,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Download TDLib
+      run: |
+        git clone https://github.com/tdlib/td.git 
+        cd td/example/android/
+
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
         java-version: '17'
 
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 34  # Adjust according to your project requirements
+        build-tools-version: 34.0.0
+        ndk-version: 27.0.0  # Specify the NDK version
+
+    - name: Accept Android SDK licenses
+      run: |
+        yes | sdkmanager --licenses
+
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gperf php unzip wget
-
-    - name: Download TDLib
-      run: |
-        git clone https://github.com/tdlib/td.git
-
-    - name: Set up SDK and NDK
-      run: |
-        cd td/example/android/
-        mkdir -p SDK NDK
-        # Download and unzip the SDK
-        sdkmanager --install "platforms;android-34" "build-tools;34.0.0" --sdk_root=${PWD}/SDK
-        # Download and extract the NDK
-        wget https://dl.google.com/android/repository/android-ndk-r27-linux-x86_64.zip -O ndk.zip
-        unzip ndk.zip -d NDK
-        rm ndk.zip
-
-    - name: Set up environment variables
-      run: |
-        echo "ANDROID_HOME=${{ github.workspace }}/td/example/android/SDK" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=${{ github.workspace }}/td/example/android/NDK" >> $GITHUB_ENV
-
-    - name: Print environment variables
-      run: |
-        echo "ANDROID_HOME=$ANDROID_HOME"
-        echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+        sudo apt-get install -y gperf php
 
     - name: Build TDLib for Android
       run: |
-        cd td/example/android/
         ./build-tdlib.sh
 
     - name: Zip the TDLib Android folder
