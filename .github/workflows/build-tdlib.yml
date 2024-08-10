@@ -22,37 +22,24 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Set up Android SDK and NDK
-      uses: android-actions/setup-android@v2
-      with:
-        api-level: 34
-        build-tools-version: 34.0.0
-        ndk-version: 27.0.0
-
-    - name: Accept Android SDK licenses
-      run: |
-        yes | sdkmanager --licenses
-
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gperf php
-
-    - name: Copy SDK and NDK to TDLib
-      run: |
-        mkdir -p td/example/android/android-sdk
-        mkdir -p td/example/android/android-ndk
-        cp -r $ANDROID_HOME/* td/example/android/android-sdk/
-        cp -r $ANDROID_NDK_HOME/* td/example/android/android-ndk/
-
-    - name: Print environment variables
-      run: |
-        echo "ANDROID_HOME=$ANDROID_HOME"
-        echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+        sudo apt-get install -y gperf php unzip
 
     - name: Download TDLib
       run: |
         git clone https://github.com/tdlib/td.git
+        cd td/example/android/
+        # Set up environment variables for SDK and NDK
+        export ANDROID_HOME=${{ github.workspace }}/td/example/android/SDK
+        export ANDROID_NDK_HOME=${{ github.workspace }}/td/example/android/NDK
+        # Download and unzip the SDK
+        sdkmanager --install "platforms;android-34" "build-tools;34.0.0" --sdk_root=${ANDROID_HOME}
+        # Download and extract the NDK
+        wget https://dl.google.com/android/repository/android-ndk-r27-linux-x86_64.zip -O ndk.zip
+        unzip ndk.zip -d $ANDROID_NDK_HOME
+        rm ndk.zip
 
     - name: Build TDLib for Android
       run: |
