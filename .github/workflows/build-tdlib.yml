@@ -27,29 +27,25 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gperf php unzip wget
 
-    - name: Download and set up Android SDK
+    - name: Download TDLib
       run: |
-        cd td/example/android/
-        # Create SDK directory and download SDK tools
-        mkdir -p SDK
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O sdk-tools.zip
-        unzip sdk-tools.zip -d SDK
-        rm sdk-tools.zip
-        export ANDROID_HOME=$(pwd)/SDK
-        # Install SDK components
-        SDK_CMD="$ANDROID_HOME/cmdline-tools/bin/sdkmanager"
-        echo y | $SDK_CMD --licenses
-        $SDK_CMD "platforms;android-34" "build-tools;34.0.0"
+        git clone https://github.com/tdlib/td.git
 
-    - name: Download and set up Android NDK
+    - name: Set up SDK and NDK
       run: |
         cd td/example/android/
-        # Create NDK directory and download NDK
-        mkdir -p NDK
+        mkdir -p SDK NDK
+        # Download and unzip the SDK
+        sdkmanager --install "platforms;android-34" "build-tools;34.0.0" --sdk_root=${PWD}/SDK
+        # Download and extract the NDK
         wget https://dl.google.com/android/repository/android-ndk-r27-linux-x86_64.zip -O ndk.zip
         unzip ndk.zip -d NDK
         rm ndk.zip
-        export ANDROID_NDK_HOME=$(pwd)/NDK
+
+    - name: Set up environment variables
+      run: |
+        echo "ANDROID_HOME=${{ github.workspace }}/td/example/android/SDK" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=${{ github.workspace }}/td/example/android/NDK" >> $GITHUB_ENV
 
     - name: Print environment variables
       run: |
