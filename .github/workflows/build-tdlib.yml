@@ -38,10 +38,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gperf php
 
-    - name: Set up environment variables
+    - name: Copy SDK and NDK to TDLib
       run: |
-        echo "ANDROID_HOME=/home/runner/work/lib/lib/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=/home/runner/work/lib/lib/android-ndk" >> $GITHUB_ENV
+        mkdir -p td/example/android/android-sdk
+        mkdir -p td/example/android/android-ndk
+        cp -r $ANDROID_HOME/* td/example/android/android-sdk/
+        cp -r $ANDROID_NDK_HOME/* td/example/android/android-ndk/
 
     - name: Print environment variables
       run: |
