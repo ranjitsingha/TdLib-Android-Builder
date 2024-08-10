@@ -1,4 +1,4 @@
-name: Build TDlib
+name: Build TdLib for android libtdjni
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
       run: |
         git clone https://github.com/tdlib/td.git
     
-    - name: Build TDLib for Android
+    - name: Build TDLib for Android libtdjni
       run: |
         cd td/example/android/
         chmod +x *
@@ -40,13 +40,9 @@ jobs:
         ./build-openssl.sh
         ./build-tdlib.sh
 
-    - name: Zip the TDLib Android folder
-      run: |
-        cd td/example/android/
-        zip -r tdlib-android.zip ./
-
     - name: Upload the artifact
       uses: actions/upload-artifact@v3
       with:
-        name: tdlib-android
-        path: td/example/android/tdlib-android.zip
+        name: tdlib
+        path: td/example/android/tdlib/tdlib.zip
+        
