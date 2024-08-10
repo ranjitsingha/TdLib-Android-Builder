@@ -45,6 +45,7 @@ jobs:
 
     - name: Build TDLib for Android
       run: |
+        cd td/example/android/
         ./build-tdlib.sh
 
     - name: Zip the TDLib Android folder
