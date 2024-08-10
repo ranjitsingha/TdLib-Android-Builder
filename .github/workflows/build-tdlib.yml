@@ -38,10 +38,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gperf php
 
-    - name: Set up environment variables
+    - name: Set up SDK folder
       run: |
-        echo "ANDROID_HOME=${{ env.ANDROID_HOME }}" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=${{ env.ANDROID_NDK_HOME }}" >> $GITHUB_ENV
+        # Create a symbolic link if needed or rename the folder
+        if [ ! -d "$ANDROID_HOME/SDK" ]; then
+          ln -s $ANDROID_HOME $ANDROID_HOME/SDK
+        fi
+        echo "ANDROID_HOME=${ANDROID_HOME}" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=${ANDROID_NDK_HOME}" >> $GITHUB_ENV
 
     - name: Download TDLib
       run: |
