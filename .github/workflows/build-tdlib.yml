@@ -33,6 +33,11 @@ jobs:
       run: |
         yes | sdkmanager --licenses
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gperf php
+
     - name: Download TDLib
       run: |
         git clone https://github.com/tdlib/td.git
@@ -41,3 +46,15 @@ jobs:
       run: |
         cd td/example/android/
         ./build-tdlib.sh
+
+    - name: Zip the TDLib Android folder
+      run: |
+        cd td/example/android/
+        zip -r tdlib-android.zip ./
+
+    - name: Upload the artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: tdlib-android
+        path: td/example/android/tdlib-android.zip
+        
