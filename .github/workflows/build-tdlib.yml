@@ -38,6 +38,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gperf php
 
+    - name: Set up environment variables
+      run: |
+        echo "ANDROID_HOME=${{ env.ANDROID_HOME }}" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=${{ env.ANDROID_NDK_HOME }}" >> $GITHUB_ENV
+
     - name: Download TDLib
       run: |
         git clone https://github.com/tdlib/td.git
