@@ -15,54 +15,31 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Set up Android SDK
-      uses: android-actions/setup-android@v2
-      with:
-        api-level: 34  # Adjust according to your project requirements
-        build-tools-version: 34.0.0
-        ndk-version: 27.0.0  # Specify the NDK version
-
-    - name: Accept Android SDK licenses
-      run: |
-        yes | sdkmanager --licenses
-
+      
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gperf php
-
-    - name: Set up SDK folder
-      run: |
-        # Create a symbolic link if needed or rename the folder
-        if [ ! -d "$ANDROID_HOME/SDK" ]; then
-          ln -s $ANDROID_HOME $ANDROID_HOME/SDK
-        fi
-        echo "ANDROID_HOME=${ANDROID_HOME}" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=${ANDROID_NDK_HOME}" >> $GITHUB_ENV
+        sudo apt-get install -y gperf php  
 
     - name: Download TDLib
       run: |
         git clone https://github.com/tdlib/td.git
-        cp -r td/example/android/* .
-
+    
     - name: Build TDLib for Android
       run: |
+        cd td/example/android/
+        chmod +x *
+        ./fetch-sdk.sh
+        ./build-openssl.sh
         ./build-tdlib.sh
 
     - name: Zip the TDLib Android folder
       run: |
+        cd td/example/android/
         zip -r tdlib-android.zip ./
 
     - name: Upload the artifact
       uses: actions/upload-artifact@v3
       with:
         name: tdlib-android
-        path: tdlib-android.zip
-        
+        path: td/example/android/tdlib-android.zip
