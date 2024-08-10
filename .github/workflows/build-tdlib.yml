@@ -41,8 +41,9 @@ jobs:
     - name: Set up SDK in TDLib directory
       run: |
         mkdir -p td/example/android/SDK
-        mv -r $ANDROID_HOME/* td/example/android/SDK/
-        mv -r $ANDROID_NDK_HOME/* td/example/android/SDK/ndk/
+        rsync -av $ANDROID_HOME/ td/example/android/SDK/
+        mkdir -p td/example/android/SDK/ndk
+        rsync -av $ANDROID_NDK_HOME/ td/example/android/SDK/ndk/
 
     - name: Build TDLib for Android
       run: |
