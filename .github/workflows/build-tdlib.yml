@@ -38,25 +38,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gperf php
 
-    - name: Set up SDK in TDLib directory
+    - name: Set up environment variables
       run: |
-        mkdir -p td/example/android/SDK
-        rsync -av $ANDROID_HOME/ td/example/android/SDK/
-        mkdir -p td/example/android/SDK/ndk
-        rsync -av $ANDROID_NDK_HOME/ td/example/android/SDK/ndk/
+        echo "ANDROID_HOME=${{ env.ANDROID_HOME }}" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=${{ env.ANDROID_NDK_HOME }}" >> $GITHUB_ENV
+
+    - name: Download TDLib
+      run: |
+        git clone https://github.com/tdlib/td.git
+        cp -r td/example/android/* .
 
     - name: Build TDLib for Android
       run: |
-        cd td/example/android/
         ./build-tdlib.sh
 
     - name: Zip the TDLib Android folder
       run: |
-        cd td/example/android/
         zip -r tdlib-android.zip ./
 
     - name: Upload the artifact
       uses: actions/upload-artifact@v3
       with:
         name: tdlib-android
-        path: td/example/android/tdlib-android.zip
+        path: tdlib-android.zip
+        
