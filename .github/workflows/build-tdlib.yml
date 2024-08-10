@@ -22,12 +22,12 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Set up Android SDK
+    - name: Set up Android SDK and NDK
       uses: android-actions/setup-android@v2
       with:
-        api-level: 34  # Adjust according to your project requirements
+        api-level: 34
         build-tools-version: 34.0.0
-        ndk-version: 27.0.0  # Specify the NDK version
+        ndk-version: 27.0.0
 
     - name: Accept Android SDK licenses
       run: |
@@ -40,8 +40,13 @@ jobs:
 
     - name: Set up environment variables
       run: |
-        echo "ANDROID_HOME=${{ env.ANDROID_HOME }}" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=${{ env.ANDROID_NDK_HOME }}" >> $GITHUB_ENV
+        echo "ANDROID_HOME=${{ github.workspace }}/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=${{ github.workspace }}/android-ndk" >> $GITHUB_ENV
+
+    - name: Print environment variables
+      run: |
+        echo "ANDROID_HOME=$ANDROID_HOME"
+        echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
 
     - name: Download TDLib
       run: |
