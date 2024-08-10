@@ -1,4 +1,4 @@
-name: Android SDK & NDK Setup with TDLib Build
+name: Build TDlib
 
 on:
   push:
